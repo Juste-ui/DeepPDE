@@ -1,8 +1,5 @@
 import numpy as np
-
 from tensorflow import keras
-from scipy.stats import norm
-from numpy.polynomial.hermite import hermgauss
 
 np.random.seed(42)
 
@@ -10,14 +7,14 @@ np.random.seed(42)
 class DPDEGenerator(keras.utils.Sequence):
     """ Create batches of random points for the network training. """
 
-    def __init__(self, batch_size, normalised_min, normalised_max, dimension):
+    def __init__(self, batch_size:int, normalised_min:int, normalised_max:int, dimension_states,dimension_param):
         """ Initialise the generator by saving the batch size. """
         self.batch_size = batch_size
         self.normalised_min = normalised_min
         self.normalised_max = normalised_max
-        self.dimension_state = dimension[0]
-        self.dimension_parameter = dimension[1]
-        self.dimension_total = dimension[2]
+        self.dimension_state = dimension_states
+        self.dimension_parameter = dimension_param
+        self.dimension_total = 1+ self.dimension_state+self.dimension_parameter
 
     def __len__(self):
         """ Describes the number of points to create """

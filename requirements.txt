@@ -1,5 +1,5 @@
-numpy
-tensorflow
+numpy==1.19
+tensorflow==2.3.0
 scipy
 matplotlib
 urllib

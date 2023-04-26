@@ -25,17 +25,16 @@ class transform:
          Perform a linear transformation of a scalar from the souce interval
          to the target interval.
 
-         Keyword arguments:
-         x -- scalar point(s) to transform
+         Keyword arguments:         x -- scalar point(s) to transform
          a, b -- interval to transform from
          c, d -- interval to transform to 
             """
         return c + (x - a) * (d - c) / (b - a)
 
-    def transform_to_logprice(self, x, normalised_min, normalised_max):
+    def transform_to_logprice(self, x):
         """ Transform normalised variable to the log-price. """
 
-        return self.transform_ab_to_cd(x, normalised_min, normalised_max, self.x_min, self.x_max)
+        return self.transform_ab_to_cd(x, self.normalise_min, self.normalise_max, self.x_min, self.x_max)
 
     def transform_to_time(self, t):
         """ Transform normalised variable to the time variable. """
@@ -55,10 +54,13 @@ class transform:
                                        self.riskfree_rate_max)
 
     def transform_to_volatility(self, mu_2):
-        """ Transform normalised variable to the volatility. """
+        """  """
+
         return self.transform_ab_to_cd(mu_2, self.normalise_min, self.normalise_max, self.volatility_min,
                                        self.volatility_max)
+   
 
+    
     def transform_to_correlation(self, mu_3):
         """ Transform normalised variable to the correlation. """
         return self.transform_ab_to_cd(mu_3, self.normalise_min, self.normalise_max, self.correlation_min,
@@ -74,7 +76,13 @@ class transform:
         return self.transform_ab_to_cd(volatility, self.volatility_min, self.volatility_max, self.normalise_min,
                                        self.normalise_max)
 
+    
     def normalise_correlation(self, correlation):
         """ Transform correlation to its corresponding normalised variable. """
         return self.transform_ab_to_cd( correlation, self.correlation_min, self.correlation_max,
                                        self.normalise_min, self.normalise_max)
+    
+
+
+
+

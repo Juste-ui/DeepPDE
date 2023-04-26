@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+DeepPDE/__init__.py
+DeepPDE/test.py
+DeepPDE.egg-info/PKG-INFO
+DeepPDE.egg-info/SOURCES.txt
+DeepPDE.egg-info/dependency_links.txt
+DeepPDE.egg-info/not-zip-safe
+DeepPDE.egg-info/top_level.txt

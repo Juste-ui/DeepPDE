@@ -1,3 +1,4 @@
+from DeepPDE.tools.transform import transform
 import numpy as np
 import tensorflow as tf
 
@@ -6,6 +7,14 @@ from scipy.stats import norm
 from numpy.polynomial.hermite import hermgauss
 
 np.random.seed(42)
+
+
+
+
+normalise = transform(t_min=0, t_max=5, strike_price=100,volatility_min=0.1,
+                     volatility_max=0.3, normalise_min=-1, normalise_max=1,
+                     r_min=0.1, r_max=0.3,rho_max=0.8, rho_min=0.2)
+
 
 
 class HighwayLayer(keras.layers.Layer):
@@ -81,3 +90,52 @@ class HighwayLayer(keras.layers.Layer):
         one_minus_G = tf.ones_like(G) - G
 
         return tf.multiply(one_minus_G, H) + tf.multiply(Z, previous_layer)
+
+
+def create_network(inputs,nr_nodes_per_layer,localisation_parameter, dimension_total):
+    """ Creates the neural network by creating three highway layers and an 
+    output layer. Returns the output of these layers as a tensorflow variable.
+
+    Keyword arguments:
+    inputs -- Tensorflow variable of the input layer
+    """
+    layer0 = keras.layers.Dense(nr_nodes_per_layer, activation="tanh")
+
+    layer1 = HighwayLayer(units=nr_nodes_per_layer,
+                          original_input=dimension_total)
+    layer2 = HighwayLayer(units=nr_nodes_per_layer,
+                          original_input=dimension_total)
+    layer3 = HighwayLayer(units=nr_nodes_per_layer,
+                          original_input=dimension_total)
+    
+    last_layer = keras.layers.Dense(1)
+
+    outputs_layer0 = layer0(inputs)
+    outputs_layer1 = layer1({'previous_layer': outputs_layer0, 
+                             'original_variable': inputs})
+    outputs_layer2 = layer2({'previous_layer': outputs_layer1, 
+                             'original_variable': inputs})
+    outputs_layer3 = layer3({'previous_layer': outputs_layer2, 
+                             'original_variable': inputs})
+
+    outputs_dnn = last_layer(outputs_layer3)
+    
+    inputs_t_normalised = inputs[:, 0:1]
+    inputs_x1_normalised = inputs[:, 1:2]
+    inputs_x2_normalised = inputs[:, 2:3]
+    inputs_p1_normalised = inputs[:, 3:4]
+
+   
+
+    inputs_t = normalise.transform_to_time(inputs_t_normalised)
+    inputs_x1 = normalise.transform_to_logprice(inputs_x1_normalised)
+    inputs_x2 = normalise.transform_to_logprice(inputs_x2_normalised)
+    inputs_s_mean = (tf.math.exp(inputs_x1) + tf.math.exp(inputs_x2))/2.
+    riskfree_rate = normalise.transform_to_riskfree_rate(inputs_p1_normalised)
+
+    localisation = tf.math.log(1+tf.math.exp(localisation_parameter * (
+            inputs_s_mean -  normalise.strike_price * tf.exp( - riskfree_rate * inputs_t)
+              )))/localisation_parameter
+
+    return outputs_dnn + localisation
+
