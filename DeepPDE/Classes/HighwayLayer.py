@@ -8,12 +8,26 @@ from numpy.polynomial.hermite import hermgauss
 
 np.random.seed(42)
 
+strike_price =100
+t_min=0
+t_max =4
+volatility_max=0.3
+volatility_min=0.1
+correlation_min = 0.2
+correlation_max = 0.8
+riskfree_rate_min = 0.1
+riskfree_rate_max = 0.3
 
+s_max = strike_price * (1 + 3*volatility_max*t_max)
+x_max = np.log(s_max)
+x_min = 2*np.log(strike_price) - x_max
+normalised_max = 1
+normalised_min = -1
 
+normalise = transform(t_min=0, t_max=t_max, strike_price=strike_price,volatility_min=volatility_min,
+                     volatility_max=volatility_max, normalise_min=-1, normalise_max=1,
+                     r_min=riskfree_rate_min, r_max=riskfree_rate_max,rho_max=correlation_max, rho_min=correlation_min)
 
-normalise = transform(t_min=0, t_max=5, strike_price=100,volatility_min=0.1,
-                     volatility_max=0.3, normalise_min=-1, normalise_max=1,
-                     r_min=0.1, r_max=0.3,rho_max=0.8, rho_min=0.2)
 
 
 
@@ -24,7 +38,9 @@ class HighwayLayer(keras.layers.Layer):
         """ Construct the layer by creating all weights and biases in keras. """
         super(HighwayLayer, self).__init__()
         self.units = units
-
+    
+       
+        
         # create all weights and biases
         self.Uz = self.add_weight("Uz", shape=(original_input, self.units),
                                   initializer="random_normal", trainable=True)
@@ -61,6 +77,7 @@ class HighwayLayer(keras.layers.Layer):
         the neural network as 'original_variable' and 
         the output of the previous layer as 'previous layer'.
         """
+
         previous_layer = input_combined['previous_layer']
         original_variable = input_combined['original_variable']
 
@@ -92,7 +109,7 @@ class HighwayLayer(keras.layers.Layer):
         return tf.multiply(one_minus_G, H) + tf.multiply(Z, previous_layer)
 
 
-def create_network(inputs,nr_nodes_per_layer,localisation_parameter, dimension_total):
+def create_network(inputs,nr_nodes_per_layer : int,localisation_parameter : float, dimension_total: int):
     """ Creates the neural network by creating three highway layers and an 
     output layer. Returns the output of these layers as a tensorflow variable.
 
