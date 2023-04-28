@@ -4,7 +4,7 @@ from scipy.stats import norm
 from numpy.polynomial.hermite import hermgauss
 from sklearn.utils.extmath import randomized_svd
 
-from DeepPDE.tools.transform import transform
+from DeepPDE.tools.Transform import Transform
 
 
 
@@ -23,7 +23,7 @@ x_max = np.log(s_max)
 x_min = 2*np.log(strike) - x_max
 normalised_max = 1
 normalised_min = -1
-normalise =transform(0,t_max=t_max, strike_price=strike,volatility_min= volatility_min,
+normalise =Transform(0,t_max=t_max, strike_price=strike,volatility_min= volatility_min,
                      volatility_max= volatility_max,normalise_min=normalised_min,normalise_max=normalised_max,r_min=riskfree_rate_min,
                      r_max= riskfree_rate_max,rho_min= correlation_min,rho_max= correlation_max)
 

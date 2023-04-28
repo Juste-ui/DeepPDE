@@ -1,5 +1,5 @@
 
-from DeepPDE.tools.transform import transform
+from DeepPDE.tools.Transform import Transform
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
@@ -40,7 +40,7 @@ class DPDEModel(keras.Model):
         data_interior, data_initial = data[0]
         
         
-        normalise =transform(0,t_max=t_max, strike_price=strike_price,volatility_min= volatility_min,
+        normalise =Transform(0,t_max=t_max, strike_price=strike_price,volatility_min= volatility_min,
                      volatility_max= volatility_max,normalise_min=normalised_min,normalise_max=normalised_max,r_min=riskfree_rate_min,
                      r_max= riskfree_rate_max,rho_min= correlation_min,rho_max= correlation_max)
         

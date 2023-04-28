@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class transform:
+class Transform:
     def __init__(self, t_min, t_max, strike_price, volatility_min, volatility_max, normalise_min, normalise_max, r_min,
                  r_max, rho_min, rho_max):
         self.normalise_min = normalise_min

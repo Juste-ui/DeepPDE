@@ -1,4 +1,4 @@
-from DeepPDE.tools.transform import transform
+from DeepPDE.tools.Transform import Transform
 import numpy as np
 import tensorflow as tf
 
@@ -24,7 +24,7 @@ x_min = 2*np.log(strike_price) - x_max
 normalised_max = 1
 normalised_min = -1
 
-normalise = transform(t_min=0, t_max=t_max, strike_price=strike_price,volatility_min=volatility_min,
+normalise = Transform(t_min=0, t_max=t_max, strike_price=strike_price,volatility_min=volatility_min,
                      volatility_max=volatility_max, normalise_min=-1, normalise_max=1,
                      r_min=riskfree_rate_min, r_max=riskfree_rate_max,rho_max=correlation_max, rho_min=correlation_min)
 
