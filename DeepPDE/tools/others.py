@@ -10,17 +10,22 @@ from DeepPDE.tools.transform import transform
 
 strike =100
 t_min=0
-t_max =5
-volatility_max=0.9
+t_max =4
+volatility_max=0.3
 volatility_min=0.1
+correlation_min = 0.2
+correlation_max = 0.8
+riskfree_rate_min = 0.1
+riskfree_rate_max = 0.3
+
 s_max = strike * (1 + 3*volatility_max*t_max)
 x_max = np.log(s_max)
 x_min = 2*np.log(strike) - x_max
 normalised_max = 1
 normalised_min = -1
 normalise =transform(0,t_max=t_max, strike_price=strike,volatility_min= volatility_min,
-                     volatility_max= volatility_max,normalise_min=normalised_min,normalise_max=normalised_max,r_min=0.01,
-                     r_max= 0.09,rho_min= 0.1,rho_max= 0.9)
+                     volatility_max= volatility_max,normalise_min=normalised_min,normalise_max=normalised_max,r_min=riskfree_rate_min,
+                     r_max= riskfree_rate_max,rho_min= correlation_min,rho_max= correlation_max)
 
 
 def localisation(t, s1, s2, localisation_parameter,strike_price,riskfree_rate):
@@ -81,23 +86,17 @@ def get_points_for_plot_at_fixed_time(t_fixed,
     s2_plot = np.linspace(s_min_interest, s_max_interest, n_plot).reshape(-1,1)
     [s1_plot_mesh, s2_plot_mesh] = np.meshgrid(s1_plot, s2_plot, indexing='ij')
 
-    x1_plot_mesh_normalised = normalise.normalise_logprice(
-        np.log(s1_plot_mesh)).reshape(-1,1)
+    x1_plot_mesh_normalised = normalise.normalise_logprice( np.log(s1_plot_mesh)).reshape(-1,1)
 
-    x2_plot_mesh_normalised = normalise.normalise_logprice(
-        np.log(s2_plot_mesh)).reshape(-1,1)
+    x2_plot_mesh_normalised = normalise.normalise_logprice(np.log(s2_plot_mesh)).reshape(-1,1)
 
     t_mesh = t_fixed  * np.ones((n_plot**2, 1))
     t_mesh_normalised = normalise.normalise_time(t_mesh)
 
-    parameter1_mesh_normalised = (normalise.normalise_riskfree_rate(riskfree_rate_fixed) 
-                                                      * np.ones((n_plot**2, 1)))
-    parameter2_mesh_normalised = (normalise.normalise_volatility(volatility1_fixed) 
-                                                      * np.ones((n_plot**2, 1)))
-    parameter3_mesh_normalised = (normalise.normalise_volatility(volatility2_fixed) 
-                                                      * np.ones((n_plot**2, 1)))
-    parameter4_mesh_normalised = (normalise.normalise_correlation(correlation_fixed) 
-                                                      * np.ones((n_plot**2, 1)))
+    parameter1_mesh_normalised = (normalise.normalise_riskfree_rate(riskfree_rate_fixed)   * np.ones((n_plot**2, 1)))
+    parameter2_mesh_normalised = (normalise.normalise_volatility(volatility1_fixed)   * np.ones((n_plot**2, 1)))
+    parameter3_mesh_normalised = (normalise.normalise_volatility(volatility2_fixed)   * np.ones((n_plot**2, 1)))
+    parameter4_mesh_normalised = (normalise.normalise_correlation(correlation_fixed)   * np.ones((n_plot**2, 1)))
 
     x_plot_normalised = np.concatenate((t_mesh_normalised,
                                         x1_plot_mesh_normalised,
@@ -109,6 +108,9 @@ def get_points_for_plot_at_fixed_time(t_fixed,
 
     
     return s1_plot_mesh, s2_plot_mesh, x_plot_normalised
+
+
+
 
 
 

@@ -54,13 +54,11 @@ class transform:
                                        self.riskfree_rate_max)
 
     def transform_to_volatility(self, mu_2):
-        """  """
+        """ Transform normalised variable to the volatility. """
 
         return self.transform_ab_to_cd(mu_2, self.normalise_min, self.normalise_max, self.volatility_min,
                                        self.volatility_max)
    
-
-    
     def transform_to_correlation(self, mu_3):
         """ Transform normalised variable to the correlation. """
         return self.transform_ab_to_cd(mu_3, self.normalise_min, self.normalise_max, self.correlation_min,

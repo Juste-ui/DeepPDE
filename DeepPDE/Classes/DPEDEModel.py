@@ -10,28 +10,41 @@ from numpy.polynomial.hermite import hermgauss
 
 strike_price =100
 t_min=0
-t_max =5
-volatility_max=0.9
+t_max =4
+volatility_max=0.3
 volatility_min=0.1
+correlation_min = 0.2
+correlation_max = 0.8
+riskfree_rate_min = 0.1
+riskfree_rate_max = 0.3
+
 s_max = strike_price * (1 + 3*volatility_max*t_max)
 x_max = np.log(s_max)
 x_min = 2*np.log(strike_price) - x_max
 normalised_max = 1
 normalised_min = -1
-normalise =transform(0,t_max=t_max, strike_price=strike_price,volatility_min= volatility_min,volatility_max= volatility_max,normalise_min=normalised_min,normalise_max=normalised_max,r_min=0.01,
-                     r_max= 0.09,rho_min= 0.1,rho_max= 0.9)
-
 
 
 class DPDEModel(keras.Model):
-    """ Create a keras model with the deep param. PDE loss function """
+     
+     
+    
+     """ Create a keras model with the deep param. PDE loss function """
+    
+   
 
-    def train_step(self, data):
+
+     def train_step(self, data):
+
         """ Create one optimisation stop based on the deep param. PDE loss function. """
         data_interior, data_initial = data[0]
-
-        riskfree_rate_interior = normalise.transform_to_riskfree_rate(
-            data_interior[:, 3:4])
+        
+        
+        normalise =transform(0,t_max=t_max, strike_price=strike_price,volatility_min= volatility_min,
+                     volatility_max= volatility_max,normalise_min=normalised_min,normalise_max=normalised_max,r_min=riskfree_rate_min,
+                     r_max= riskfree_rate_max,rho_min= correlation_min,rho_max= correlation_max)
+        
+        riskfree_rate_interior = normalise.transform_to_riskfree_rate(data_interior[:, 3:4])
         volatility1_interior = normalise.transform_to_volatility(data_interior[:, 4:5])
         volatility2_interior = normalise.transform_to_volatility(data_interior[:, 5:6])
         correlation_interior = normalise.transform_to_correlation(data_interior[:, 6:7])
@@ -72,8 +85,7 @@ class DPDEModel(keras.Model):
                     * volatility2_interior * volatility1_interior * v_dx2dx1
                 )
 
-            s_mean_initial = 0.5 * (
-                tf.math.exp(x1_initial)+tf.math.exp(x2_initial)) 
+            s_mean_initial = 0.5 * (tf.math.exp(x1_initial)+tf.math.exp(x2_initial)) 
             payoff_initial = K.maximum(s_mean_initial - strike_price, 0)
 
             loss_interior = K.mean(K.square(residual_interior))
